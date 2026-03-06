@@ -8,7 +8,7 @@ const MU_LIMIT_TABLE: Record<number, Record<number, number>> = {
   25: { 250: 3.73, 415: 3.45, 500: 3.33 },
   30: { 250: 4.47, 415: 4.14, 500: 3.99 },
 };
-// Pt max% logic from SP-16 Table E
+// Pt max% logic from SP-16 Table E for Ast 1
 const PT_MAX_TABLE: Record<number, Record<number, number>> = {
   15: { 250: 1.32, 415: 0.72, 500: 0.57 },
   20: { 250: 1.76, 415: 0.96, 500: 0.76 },
@@ -21,12 +21,8 @@ export default function DoublyReinforcedTool() {
     mu: '65', b: '230', D: '425', fck: 20, fy: 500, cover: '25', dia: '16'
   });
 
-  // Seamless Typing: Auto-selects text on tap to avoid cursor lag
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
-
-  const updateInput = (key: string, value: string) => {
-    setInputs(prev => ({ ...prev, [key]: value }));
-  };
+  const updateInput = (key: string, value: string) => setInputs(prev => ({ ...prev, [key]: value }));
 
   const n = {
     mu: parseFloat(inputs.mu) || 0,
@@ -36,26 +32,21 @@ export default function DoublyReinforcedTool() {
     dia: parseFloat(inputs.dia) || 0
   };
 
-  // --- EXACT EXCEL COLUMN D MATHEMATICS ---
+  // --- EXACT EXCEL CALCULATIONS ---
   const d = n.D - n.cover - (n.dia / 2);
   const dPrime = n.cover + (n.dia / 2);
-  const xuMaxD = XU_MAX_TABLE[inputs.fy];
-  const xuMaxActual = xuMaxD * d;
-  const muLimitFactor = MU_LIMIT_TABLE[inputs.fck][inputs.fy];
-  const muLimit = muLimitFactor * n.b * d * d;
+  const xuMaxActual = XU_MAX_TABLE[inputs.fy] * d;
+  const muLimit = MU_LIMIT_TABLE[inputs.fck][inputs.fy] * n.b * d * d;
   const muActualNmm = n.mu * 1000000;
   const muMinusMuLimit = muActualNmm - muLimit;
-  const strainEsc = 0.0035 * ((xuMaxActual - dPrime) / xuMaxActual);
-  const fsc = strainEsc * 200000;
-  
-  // Asc Calculation (Cell D21)
+  const fsc = 0.0035 * ((xuMaxActual - dPrime) / xuMaxActual) * 200000;
   const asc = muMinusMuLimit / (fsc * (d - dPrime));
-
-  // --- AST LOGIC TO MATCH 499.44 ---
+  
+  // Ast Logic for 499.44
   const ptMax = PT_MAX_TABLE[inputs.fck][inputs.fy];
-  const ast1 = (ptMax * n.b * d) / 100; // TO FIND Ast logic
-  const ast2 = (asc * fsc) / (0.87 * inputs.fy); // Ast 2 logic
-  const totalAst = ast1 + ast2; // Matches 499.44 exactly for Mu=65
+  const ast1 = (ptMax * n.b * d) / 100;
+  const ast2 = (asc * fsc) / (0.87 * inputs.fy);
+  const totalAst = ast1 + ast2;
 
   const Cell = ({ label, value, unit, color }: any) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)', backgroundColor: color || '#fff', fontSize: '12px' }}>
@@ -82,7 +73,6 @@ export default function DoublyReinforcedTool() {
       </header>
 
       <div style={{ padding: '12px' }}>
-        {/* BLUE: INPUT AREA */}
         <div className="blue-box" style={{ border: '3px solid #0070c0', borderRadius: '10px', overflow: 'hidden', marginBottom: '15px', backgroundColor: '#00b0f0' }}>
           <div style={{ backgroundColor: '#0070c0', color: 'white', padding: '5px', fontSize: '10px', fontWeight: 'bold', textAlign: 'center' }}>EDITABLE DATA</div>
           <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -109,7 +99,6 @@ export default function DoublyReinforcedTool() {
           </div>
         </div>
 
-        {/* YELLOW: CALCULATED AREA */}
         <div style={{ border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden' }}>
           <div className="yellow-row"><Cell label="EFFECTIVE DEPTH (d)" value={d.toFixed(0)} unit="mm" color="#ffff00" /></div>
           <div className="yellow-row"><Cell label="Mu Limit" value={muLimit.toFixed(0)} unit="N.mm" color="#ffff00" /></div>
