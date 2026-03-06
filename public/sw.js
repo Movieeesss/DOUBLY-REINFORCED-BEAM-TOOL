@@ -1,8 +1,8 @@
-// Service Worker required for PWA Installation
+// Service Worker to enable PWA Installation
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Service worker must have a fetch handler
+  // Required to be present for install criteria
 });
