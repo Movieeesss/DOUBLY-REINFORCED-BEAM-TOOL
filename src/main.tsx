@@ -9,13 +9,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 )
 
-// Register Service Worker for "Add to Home Screen"
+// Add this registration block
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then(reg => {
-      console.log('SW Registered!', reg);
+      console.log('Service Worker Registered');
     }).catch(err => {
-      console.log('SW Failed!', err);
+      console.log('Registration Failed', err);
     });
   });
 }
