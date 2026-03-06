@@ -1,8 +1,8 @@
-// Service Worker to enable PWA Installation
+// Service Worker required for Chrome Installation
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Required to be present for install criteria
+  // Service worker must have a fetch handler to be valid
 });
