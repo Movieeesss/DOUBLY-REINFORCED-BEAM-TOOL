@@ -14,7 +14,7 @@ export default function DoublyReinforcedTool() {
     mu: '75', b: '230', D: '425', fck: 20, fy: 500, cover: '25', dia: '16'
   });
 
-  // Highlight text on tap so "0" is replaced instantly
+  // Seamless Experience: Auto-select text on tap so "0" is replaced instantly
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
   const updateInput = (key: string, value: string) => {
@@ -34,7 +34,7 @@ export default function DoublyReinforcedTool() {
   const d = n.D - n.cover - (n.dia / 2);
   const dPrime = n.cover + (n.dia / 2);
   const xuMaxD = XU_MAX_TABLE[inputs.fy];
-  const es = 200000;
+  const es = 200000; //
   const muLimitFactor = MU_LIMIT_TABLE[inputs.fck][inputs.fy];
   const muLimit = muLimitFactor * n.b * d * d;
   const muActualNmm = n.mu * 1000000;
@@ -56,12 +56,12 @@ export default function DoublyReinforcedTool() {
   );
 
   return (
-    <div id="capture-area" style={{ maxWidth: '400px', margin: '0 auto', fontFamily: 'sans-serif', backgroundColor: '#fff', minHeight: '100vh', border: '1px solid #ddd' }}>
+    <div id="printable-area" style={{ maxWidth: '400px', margin: '0 auto', fontFamily: 'sans-serif', backgroundColor: '#fff', minHeight: '100vh', border: '1px solid #ddd' }}>
       <style>{`
         @media print {
           @page { size: auto; margin: 0; }
           body { margin: 0; padding: 0; overflow: hidden; height: 100vh; }
-          #capture-area { border: none !important; width: 100% !important; max-width: 100% !important; height: 100vh !important; margin: 0 !important; padding: 0 !important; overflow: hidden; }
+          #printable-area { border: none !important; width: 100% !important; max-width: 100% !important; height: 100vh !important; margin: 0 !important; padding: 0 !important; overflow: hidden; }
           .no-print { display: none !important; }
           header, .blue-box, .yellow-row, .green-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           input, select { border: none !important; background: transparent !important; pointer-events: none; }
@@ -80,17 +80,17 @@ export default function DoublyReinforcedTool() {
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.3)', padding: '6px 10px', borderRadius: '6px' }}>
               <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#003366' }}>Mu (Moment) kNm</label>
-              <input type="text" onFocus={handleFocus} value={inputs.mu} onChange={e => updateInput('mu', e.target.value)} style={{ width: '90px', textAlign: 'right', padding: '6px', border: '1px solid #0070c0', borderRadius: '4px', fontWeight: '900', fontSize: '16px' }} />
+              <input type="text" onFocus={handleFocus} value={inputs.mu} onChange={e => updateInput('mu', e.target.value)} style={{ width: '95px', textAlign: 'right', padding: '6px', border: '1px solid #0070c0', borderRadius: '4px', fontWeight: '900', fontSize: '16px' }} />
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.3)', padding: '6px 10px', borderRadius: '6px' }}>
               <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#003366' }}>Breadth (b) mm</label>
-              <input type="text" onFocus={handleFocus} value={inputs.b} onChange={e => updateInput('b', e.target.value)} style={{ width: '90px', textAlign: 'right', padding: '6px', border: '1px solid #0070c0', borderRadius: '4px', fontWeight: 'bold' }} />
+              <input type="text" onFocus={handleFocus} value={inputs.b} onChange={e => updateInput('b', e.target.value)} style={{ width: '95px', textAlign: 'right', padding: '6px', border: '1px solid #0070c0', borderRadius: '4px', fontWeight: 'bold' }} />
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.3)', padding: '6px 10px', borderRadius: '6px' }}>
               <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#003366' }}>Depth (D) mm</label>
-              <input type="text" onFocus={handleFocus} value={inputs.D} onChange={e => updateInput('D', e.target.value)} style={{ width: '90px', textAlign: 'right', padding: '6px', border: '1px solid #0070c0', borderRadius: '4px', fontWeight: 'bold' }} />
+              <input type="text" onFocus={handleFocus} value={inputs.D} onChange={e => updateInput('D', e.target.value)} style={{ width: '95px', textAlign: 'right', padding: '6px', border: '1px solid #0070c0', borderRadius: '4px', fontWeight: 'bold' }} />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -122,11 +122,11 @@ export default function DoublyReinforcedTool() {
           
           <div className="green-bar" style={{ backgroundColor: '#92d050', padding: '12px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '2px solid #76b041' }}>
             <span style={{ fontSize: '14px', fontWeight: '900' }}>TOTAL Ast</span>
-            <span style={{ fontSize: '18px', fontWeight: '900' }}>{muSurplus > 0 ? totalAst.toFixed(2) : 'Singly Only'} mm²</span>
+            <span style={{ fontSize: '18px', fontWeight: '900' }}>{totalAst.toFixed(2)} mm²</span>
           </div>
         </div>
 
-        <button className="no-print" onClick={() => window.print()} style={{ width: '100%', marginTop: '12px', padding: '14px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+        <button className="no-print" onClick={() => window.print()} style={{ width: '100%', marginTop: '12px', padding: '14px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px' }}>
           PRINT TO PDF / SAVE REPORT
         </button>
       </div>
