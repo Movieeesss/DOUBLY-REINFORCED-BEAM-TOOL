@@ -1,7 +1,6 @@
 {
   "short_name": "Beam Tool",
   "name": "Doubly Reinforced Beam Tool",
-  "description": "Structural Engineering Tool by Uniq Designs",
   "icons": [
     {
       "src": "favicon.ico",
@@ -23,6 +22,5 @@
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#92d050",
-  "background_color": "#ffffff",
-  "orientation": "portrait"
+  "background_color": "#ffffff"
 }
