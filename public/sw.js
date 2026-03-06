@@ -1,8 +1,7 @@
-// Simple Service Worker to enable PWA installation
-self.addEventListener('install', (event) => {
+self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-self.addEventListener('fetch', (event) => {
-  // Required to stay active
+self.addEventListener('fetch', (e) => {
+  // Required to be present for PWA criteria
 });
