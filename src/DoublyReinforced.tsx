@@ -9,99 +9,95 @@ const MU_LIMIT_TABLE: Record<number, Record<number, number>> = {
   30: { 250: 4.47, 415: 4.14, 500: 3.99 },
 };
 
-export default function DoublyReinforcedMobile() {
+export default function DoublyReinforced() {
   const [inputs, setInputs] = useState({
     mu: 75, b: 230, D: 425, fck: 20, fy: 500, cover: 25, dia: 16
   });
 
-  // 1. DIMENSIONS
+  // 1. Dimensions
   const d = inputs.D - inputs.cover - (inputs.dia / 2);
   const dPrime = inputs.cover + (inputs.dia / 2);
   
-  // 2. LIMITING MOMENT
+  // 2. Limiting Values
   const xuMax = XU_MAX_TABLE[inputs.fy] * d;
   const muLimit = MU_LIMIT_TABLE[inputs.fck][inputs.fy] * inputs.b * d * d;
-  const muActual = inputs.mu * 1e6; // kNm to N.mm conversion
+  const muActual = inputs.mu * 1e6; // kNm to N.mm
   const muSurplus = muActual - muLimit;
 
-  // 3. STRESS & STRAIN
+  // 3. Stress/Strain (Es = 2e5)
   const strainEsc = 0.0035 * ((xuMax - dPrime) / xuMax);
-  const fsc = strainEsc * 200000; // Es = 2x10^5 N/mm2
+  const fsc = Math.min(strainEsc * 200000, 0.87 * inputs.fy);
   
-  // 4. STEEL AREAS
+  // 4. Area of Steel
   const asc = muSurplus / (fsc * (d - dPrime));
   const ast1 = (0.36 * inputs.fck * inputs.b * xuMax) / (0.87 * inputs.fy);
   const ast2 = (asc * fsc) / (0.87 * inputs.fy);
   const totalAst = ast1 + ast2;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800 pb-10">
-      <header className="bg-green-700 text-white p-4 shadow-lg sticky top-0 z-20 text-center">
-        <h1 className="text-lg font-black tracking-widest uppercase">Uniq Designs</h1>
-        <p className="text-[9px] font-bold opacity-75">DOUBLY REINFORCED BEAM CALCULATOR</p>
+    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800 pb-10 font-sans">
+      <header className="bg-green-700 text-white p-5 shadow-lg sticky top-0 z-20 text-center">
+        <h1 className="text-xl font-black tracking-tighter uppercase">Uniq Designs</h1>
+        <p className="text-[10px] font-bold opacity-70">BEAM CALCULATOR V2.0</p>
       </header>
 
       <div className="p-4 space-y-4">
-        {/* INPUTS SECTION */}
-        <div className="bg-white rounded-2xl border-l-8 border-blue-500 shadow-md overflow-hidden p-4 space-y-3">
+        {/* INPUTS - BLUE */}
+        <div className="bg-white rounded-2xl border-t-8 border-blue-600 shadow-xl p-5 space-y-4">
+          <div className="flex flex-col">
+            <label className="text-[10px] text-blue-800 font-bold uppercase mb-1">Moment (Mu) kNm</label>
+            <input type="number" value={inputs.mu} onChange={e => setInputs({...inputs, mu: Number(e.target.value)})} className="w-full bg-blue-50 border-2 border-blue-100 rounded-xl p-4 text-2xl font-black text-blue-900 focus:border-blue-500 outline-none" />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="text-[10px] text-blue-900 font-bold mb-1 uppercase">Moment (Mu) kNm</label>
-              <input type="number" value={inputs.mu} onChange={e => setInputs({...inputs, mu: +e.target.value})} className="w-full bg-blue-50 border-2 border-blue-100 rounded-xl p-3 text-xl font-black text-blue-900 outline-none" />
+              <label className="text-[10px] text-blue-800 font-bold mb-1 uppercase text-center">Width (b)</label>
+              <input type="number" value={inputs.b} onChange={e => setInputs({...inputs, b: Number(e.target.value)})} className="bg-blue-50 border-2 border-blue-100 rounded-xl p-3 font-bold text-center" />
             </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col">
-                <label className="text-[10px] text-blue-900 font-bold mb-1 uppercase">Breadth (b)</label>
-                <input type="number" value={inputs.b} onChange={e => setInputs({...inputs, b: +e.target.value})} className="bg-blue-50 border-2 border-blue-100 rounded-xl p-3 font-bold text-center" />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-[10px] text-blue-900 font-bold mb-1 uppercase">Depth (D)</label>
-                <input type="number" value={inputs.D} onChange={e => setInputs({...inputs, D: +e.target.value})} className="bg-blue-50 border-2 border-blue-100 rounded-xl p-3 font-bold text-center" />
-              </div>
+            <div className="flex flex-col">
+              <label className="text-[10px] text-blue-800 font-bold mb-1 uppercase text-center">Depth (D)</label>
+              <input type="number" value={inputs.D} onChange={e => setInputs({...inputs, D: Number(e.target.value)})} className="bg-blue-50 border-2 border-blue-100 rounded-xl p-3 font-bold text-center" />
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col">
-                <label className="text-[10px] text-blue-900 font-bold mb-1 uppercase">Grade fck</label>
-                <select value={inputs.fck} onChange={e => setInputs({...inputs, fck: +e.target.value})} className="bg-blue-100 border-2 border-blue-200 rounded-xl p-3 font-black text-center">
-                  {[15, 20, 25, 30].map(v => <option key={v} value={v}>M{v}</option>)}
-                </select>
-              </div>
-              <div className="flex flex-col">
-                <label className="text-[10px] text-blue-900 font-bold mb-1 uppercase">Steel fy</label>
-                <select value={inputs.fy} onChange={e => setInputs({...inputs, fy: +e.target.value})} className="bg-blue-100 border-2 border-blue-200 rounded-xl p-3 font-black text-center">
-                  {[250, 415, 500].map(v => <option key={v} value={v}>Fe{v}</option>)}
-                </select>
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="text-[10px] text-blue-800 font-bold mb-1 uppercase text-center">Concrete</label>
+              <select value={inputs.fck} onChange={e => setInputs({...inputs, fck: Number(e.target.value)})} className="bg-blue-100 border-2 border-blue-200 rounded-xl p-3 font-black text-center">
+                {[15, 20, 25, 30].map(v => <option key={v} value={v}>M{v}</option>)}
+              </select>
             </div>
+            <div className="flex flex-col">
+              <label className="text-[10px] text-blue-800 font-bold mb-1 uppercase text-center">Steel</label>
+              <select value={inputs.fy} onChange={e => setInputs({...inputs, fy: Number(e.target.value)})} className="bg-blue-100 border-2 border-blue-200 rounded-xl p-3 font-black text-center">
+                {[250, 415, 500].map(v => <option key={v} value={v}>Fe{v}</option>)}
+              </select>
+            </div>
+          </div>
         </div>
 
-        {/* CALCULATIONS SECTION */}
-        <div className="bg-yellow-50 rounded-2xl border border-yellow-200 p-4 space-y-2 text-sm shadow-sm">
+        {/* RESULTS - YELLOW */}
+        <div className="bg-yellow-400/20 rounded-2xl border border-yellow-300 p-4 space-y-2 text-sm">
           <div className="flex justify-between border-b border-yellow-200 pb-1">
-            <span className="text-yellow-800 font-bold">Eff. Depth (d)</span>
+            <span className="text-yellow-900 opacity-70 italic font-medium">Effective Depth (d)</span>
             <span className="font-mono font-black">{d.toFixed(1)} mm</span>
           </div>
-          <div className="flex justify-between border-b border-yellow-200 pb-1">
-            <span className="text-yellow-800 font-bold">Surplus Moment</span>
-            <span className="font-mono font-black">{(muSurplus/1e6).toFixed(2)} kNm</span>
-          </div>
           <div className="flex justify-between">
-            <span className="text-yellow-800 font-bold">Comp. Steel (Asc)</span>
+            <span className="text-yellow-900 opacity-70 italic font-medium">Comp. Steel (Asc)</span>
             <span className="font-mono font-black text-red-600">{muSurplus > 0 ? asc.toFixed(2) : "0.00"} mm²</span>
           </div>
         </div>
 
-        {/* FINAL TOTAL SECTION */}
-        <div className="bg-green-600 rounded-3xl p-8 shadow-xl text-center text-white ring-8 ring-green-100/50">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-2">Total Tension Steel (Ast)</p>
+        {/* FINAL - GREEN */}
+        <div className="bg-green-700 rounded-3xl p-10 shadow-2xl text-center text-white ring-8 ring-green-100/30">
+          <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Required Tension Steel (Ast)</p>
           {muSurplus > 0 ? (
             <>
-              <div className="text-6xl font-black">{totalAst.toFixed(0)}</div>
-              <div className="text-sm mt-1 font-bold">mm² REQUIRED</div>
+              <div className="text-7xl font-black drop-shadow-lg leading-none">{totalAst.toFixed(0)}</div>
+              <div className="text-xs mt-3 font-black tracking-widest">SQUARE MILLIMETERS</div>
             </>
           ) : (
-            <div className="text-xl font-black py-4">Singly Reinforced Only</div>
+            <div className="text-xl font-black py-6 bg-green-800 rounded-xl animate-pulse">Singly Reinforced Only</div>
           )}
         </div>
       </div>
