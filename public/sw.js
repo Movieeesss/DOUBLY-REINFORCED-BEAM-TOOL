@@ -1,4 +1,4 @@
-// Service Worker required for Chrome Installation
+// Service Worker for Android Chrome Installation
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -8,5 +8,5 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // This can be empty but must exist to trigger the install prompt
+  // Required to trigger the install prompt
 });
